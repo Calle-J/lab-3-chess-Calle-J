@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from board_movement import BoardMovement
 
 class BaseChessPiece(ABC):
     def __init__(self, color: str, identifier: int, name: str, symbol: str):
@@ -10,7 +11,7 @@ class BaseChessPiece(ABC):
         self.is_alive = True
 
     @abstractmethod
-    def move(self):
+    def move(self, *args, **kwargs):
         # Each piece must implement its own logic.
         pass
 
@@ -26,6 +27,30 @@ class BaseChessPiece(ABC):
     
     def base_move(self, movement: str):
         print(movement)
+
+    def set_initial_position(self, position):
+        self.position = position
+    
+    def define_board(self, board):
+        self.board = board
+
+    def apply_movement(self, new_square: str):
+        if new_square is None:
+            print("Invalid move: outside board")
+            return
+        
+        target_piece = self.board.get_piece(new_square)
+
+        if target_piece is not None:
+            if target_piece.color == self.color:
+                print("Blocked by fiendly piece")
+                return
+            else:
+                target_piece.die()
+        
+        self.board.squares[self.position] = None
+        self.position = new_square
+        self.board.squares[self.position] = self
     
 #---------------------------
 #
@@ -38,45 +63,62 @@ class Pawn(BaseChessPiece):
         super().__init__(color, identifier, "Pawn", "-")
     
     def move(self):
-        movement = "Pawn moves forward 1 position"
-        super().baseMove(movement)
+        new_square = BoardMovement.forward(self.position, self.color, 1)
+        self.apply_movement(new_square)
 
 class Rook(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Rook", "R")
 
-    def move(self):
-        movement = "Rook moves horizontally or vertically"
-        super().baseMove(movement)
+    def move(self, direction: str, squares: int):
+        if direction == "left":
+            new_square = BoardMovement.left(self.position, squares)
+        elif direction == "right":
+            new_square = BoardMovement.right(self.position, squares)
+        elif direction == "forward":
+            new_square = BoardMovement.forward(self.position, self.color, squares)
+        elif direction == "backward":
+            new_square = BoardMovement.backward(self.position, self.color, squares)
+        else:
+            print("Invalid direction")
+            return
+        self.apply_movement(new_square)
 
 class Bishop(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Bishop", "B")
 
-    def move(self):
-        movement = "Bishop moves diagonally"
-        super().baseMove(movement)
+    def move(self, col_dir: int, row_dir: int, squares: int):
+        new_square = BoardMovement.diagonal(self.position, col_dir, row_dir, squares)
+        self.apply_movement(new_square)
 
 class Knight(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Knight", "N")
 
-    def move(self):
-        movement = "Knight moves in an L-shape"
-        super().baseMove(movement)
+    def move(self, col_change: int, row_change: int):
+        new_col = chr(ord(self.position[0]) + col_change)
+        new_row = int(self.position[1]) + row_change
+
+        if new_col < "a" or new_col > "h" or new_row < 1 or new_row > 8:
+            print("Knight cannot move outside board")
+            return
+
+        new_square = f"{new_col}{new_row}"
+        self.apply_movement(new_square)
 
 class Queen(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Queen", "Q")
     
-    def move(self):
-        movement = "Queen moves in all directions"
-        super().baseMove(movement)
+    def move(self, col_dir: int, row_dir: int, squares: int):
+        new_square = BoardMovement.diagonal(self.position, col_dir, row_dir, squares)
+        self.apply_movement(new_square)
 
 class King(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "King", "K")
 
-    def move(self):
-        movement = "King moves 1 square in any direction"
-        super().baseMove(movement)
+    def move(self, col_dir: int, row_dir: int):
+        new_square = BoardMovement.diagonal(self.position, col_dir, row_dir, 1)
+        self.apply_movement(new_square)

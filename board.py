@@ -41,6 +41,11 @@ class Board:
         self.squares["g8"] = Knight("WHITE", 2)
         self.squares["h8"] = Rook("WHITE", 2)
 
+        for square, piece in self.squares.items():
+            if piece is not None:
+                piece.set_initial_position(square)
+                piece.define_board(self)
+
     def print_board(self):
         rows = []
         for row in range(1, 9):
