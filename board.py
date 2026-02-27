@@ -1,4 +1,5 @@
 from pieces import Pawn, Rook, Bishop, Knight, Queen, King
+import json
 
 class Board:
     def __init__(self):
@@ -84,3 +85,7 @@ class Board:
             and piece.color == color
         ]
         return matches[0] if matches else None
+    
+    def save_state(self):
+        with open("board.txt", "a") as file:
+            file.write(json.dumps(self.squares) + "\n")

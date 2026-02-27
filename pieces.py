@@ -2,17 +2,38 @@ from abc import ABC, abstractmethod
 from board_movement import BoardMovement
 import functools
 
+#------------------------
+#
+#       DECORATORS
+#
+#------------------------
+
 def print_board_after_move(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         if self.board:
             print("\nBoard after move:")
-            self.board.printboard()
+            self.board.print_board()
         return result
     return wrapper
 
-class BaseChessPiece(ABC):
+def save_board_after_move(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        if self.board:
+            self.board.save_state()
+        return result
+    return wrapper
+
+#------------------------
+#
+#       BASE CLASS
+#
+#------------------------
+
+class BaseChessPiece(ABC, dict):
     def __init__(self, color: str, identifier: int, name: str, symbol: str):
         self.color = color
         self.identifier = identifier
@@ -20,6 +41,14 @@ class BaseChessPiece(ABC):
         self.symbol = symbol
         self.position = None
         self.is_alive = True
+        self.board = None
+
+        dict.__init__(self, 
+                      color=color, 
+                      identifier=identifier, 
+                      name=name, symbol=symbol, 
+                      position=None, 
+                      is_alice=True)
 
     @abstractmethod
     def move(self, *args, **kwargs):
@@ -41,10 +70,12 @@ class BaseChessPiece(ABC):
 
     def set_initial_position(self, position):
         self.position = position
+        self["position"] = position
     
     def define_board(self, board):
         self.board = board
 
+    @save_board_after_move
     @print_board_after_move
     def apply_movement(self, new_square: str):
         if new_square is None:
@@ -62,6 +93,7 @@ class BaseChessPiece(ABC):
         
         self.board.squares[self.position] = None
         self.position = new_square
+        self["position"] = new_square
         self.board.squares[self.position] = self
     
 #---------------------------
