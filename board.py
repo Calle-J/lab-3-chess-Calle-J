@@ -89,3 +89,23 @@ class Board:
     def save_state(self):
         with open("board.txt", "a") as file:
             file.write(json.dumps(self.squares) + "\n")
+
+    @staticmethod
+    def load_states():
+        # Generator that yields one board state (one line) at a time.
+        try:
+            with open("board.txt", "r") as file:
+                for line in file:
+                    yield line.strip()
+        except FileNotFoundError:
+            print("No board.txt file found.")
+    
+    @staticmethod
+    def print_state_from_dict(state_dict):
+        # Print a saved board state in the same format as print_board().
+        for row in range(1, 9):
+            row_pieces = []
+            for col in range(ord("a"), ord("i")):
+                square = f"{chr(col)}{row}"
+                row_pieces.append(state_dict.get(square))
+            print(row_pieces)
