@@ -1,5 +1,16 @@
 from abc import ABC, abstractmethod
 from board_movement import BoardMovement
+import functools
+
+def print_board_after_move(func):
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        if self.board:
+            print("\nBoard after move:")
+            self.board.printboard()
+        return result
+    return wrapper
 
 class BaseChessPiece(ABC):
     def __init__(self, color: str, identifier: int, name: str, symbol: str):
@@ -34,6 +45,7 @@ class BaseChessPiece(ABC):
     def define_board(self, board):
         self.board = board
 
+    @print_board_after_move
     def apply_movement(self, new_square: str):
         if new_square is None:
             print("Invalid move: outside board")
