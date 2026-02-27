@@ -24,6 +24,9 @@ class BaseChessPiece(ABC):
     def __repr__(self):
         return self.__str__()
     
+    def baseMove(self, movement: str):
+        print(movement)
+    
 #---------------------------
 #
 #       PIECE CLASSES
@@ -35,39 +38,45 @@ class Pawn(BaseChessPiece):
         super().__init__(color, identifier, "Pawn", "-")
     
     def move(self):
-        print("Pawn moves forward 1 position")
+        movement = "Pawn moves forward 1 position"
+        super().baseMove(movement)
 
 class Rook(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Rook", "R")
 
     def move(self):
-        print("Rook moves horizontally or vertically")
+        movement = "Rook moves horizontally or vertically"
+        super().baseMove(movement)
 
 class Bishop(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Bishop", "B")
 
     def move(self):
-        print("Bishop moves diagonally")
+        movement = "Bishop moves diagonally"
+        super().baseMove(movement)
 
 class Knight(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Knight", "N")
 
     def move(self):
-        print("Knight moves in an L-shape")
+        movement = "Knight moves in an L-shape"
+        super().baseMove(movement)
 
 class Queen(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "Queen", "Q")
     
     def move(self):
-        print("Queen moves in all directions")
+        movement = "Queen moves in all directions"
+        super().baseMove(movement)
 
 class King(BaseChessPiece):
     def __init__(self, color: str, identifier: int):
         super().__init__(color, identifier, "King", "K")
 
     def move(self):
-        print("King moves 1 square in any direction")
+        movement = "King moves 1 square in any direction"
+        super().baseMove(movement)
