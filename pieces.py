@@ -24,7 +24,7 @@ class BaseChessPiece(ABC):
     def __repr__(self):
         return self.__str__()
     
-    def baseMove(self, movement: str):
+    def base_move(self, movement: str):
         print(movement)
     
 #---------------------------
